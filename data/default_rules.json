@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Music",
+    "extensions": [".mp3", ".flac", ".wav", ".m4a", ".ogg"],
+    "destination": "Music"
+  },
+  {
+    "name": "Pictures",
+    "extensions": [".jpg", ".jpeg", ".png", ".webp", ".gif"],
+    "destination": "Images"
+  },  
+  {
+        "name": "Code",
+        "extensions": [".py", ".js", ".java", ".cpp", ".c", ".html", ".css"],
+        "destination": "Code"
+  },
+  {
+    "name": "Documents",
+    "extensions": [".pdf", ".docx", ".txt", ".xlsx", ".pptx"],
+    "destination": "Documents"
+  },
+  {
+    "name": "Videos",
+    "extensions": [".mp4", ".avi", ".mkv", ".mov", ".wmv"],
+    "destination": "Videos"
+  },
+  {
+    "name": "Archives",
+    "extensions": [".zip", ".rar", ".tar", ".gz"],
+    "destination": "Archives"
+  }
+]
