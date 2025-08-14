@@ -13,6 +13,9 @@ if undo_q == "a":
 elif undo_q not in {"", "n", "no"}:
     print("Skipping undo.")
 
+subfolder_q = input("Sort inside subfolders as well? (y/N): ").strip().lower()
+cfg["behavior"]["sort_subfolders"] = (subfolder_q == "y")
+
 print("\n=== DRY RUN PREVIEW ===")
 apply_moves(build_preview(cfg), cfg, dry_run=True)
 

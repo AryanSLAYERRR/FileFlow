@@ -49,6 +49,7 @@ def get_default_config() -> Dict[str, Any]:
         "behavior": {
             "move": True,
             "conflict_policy": "skip",
+            "sort_subfolders": True
         },
         "ui": {
             "preview_window_limit":1000,
