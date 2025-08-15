@@ -1,0 +1,90 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+*.pyd
+*.dll
+
+
+# Virtual environments
+.vscode/
+vscode/
+.venv/
+venv/
+env/
+ENV/
+.venv*/
+.conda/
+pip-wheel-metadata/
+
+# Distribution / packaging
+__pycache__/
+dist/
+build/
+*.egg-info/
+*.egg
+.eggs/
+wheels/
+*.whl
+*.spec
+
+# Unit test / coverage
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache/
+pytest_cache/
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+
+# Jupyter/IPython (future-proofing)
+.ipynb_checkpoints/
+.profile_default/
+ipython_config.py
+
+# Logs and runtime
+logs/
+*.log
+
+# App runtime artifacts (FileFlow)
+.fileflow_journal.jsonl
+config.json
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Editor/IDE
+.vscode/
+.idea/
+*.iml
+*.code-workspace
+.history/
+*.swp
+*.swo
+
+# Static type checkers / linters
+.mypy_cache/
+.pyre/
+.pytype/
+ruff_cache/
+.dmypy.json
+.pyre_configuration.local
+
+# Tool caches (poetry/pdm/etc.)
+__pypackages__/
+.pdm-python/
+.masonry/
+.poetry/
+.poetry-cache/
+
+# macOS debug symbols
+*.dSYM/
