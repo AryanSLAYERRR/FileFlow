@@ -52,6 +52,7 @@ Fast, Simple, and Safe File Sorting — Organize your downloads in seconds.
 - Tkinter (Linux: `sudo apt-get install python3-tk`)
 - Linux file opening: `sudo apt-get install xdg-utils`
 - Clone this repo: ``` git clone https://github.com/AryanSLAYERRR/FileFlow ```
+- cd into Fileflow
 
 **Windows (PowerShell)**  
 ```powershell
@@ -72,12 +73,13 @@ python3 main.py
 
 ## 🧭 How to Use
 
-1. **Scan** — Select “Scan / Preview” to analyze files.  
-2. **Review** — Watch planned actions in real time (*MOVE*, *SKIP*, *CONFLICT*).  
-3. **Configure** in **Settings**:
+1. **Configure** in **Settings**:
    - Include paths (e.g., `Downloads`)
-   - Optional destination roots
+   - Optional destination roots ( where the folders will be created to sort, multiple can be set for multiple paths)
    - Exclude patterns + conflict policy
+   - Add folders you want to exclude from scanning
+2. **Scan** — Select “Scan / Preview” to analyze files.  
+3. **Review** — Watch planned actions in real time (*MOVE*, *SKIP*, *CONFLICT*).   
 4. **Rules** — Map `.ext` → folder (e.g., `.jpg` → `Pictures`). Falls back to defaults.  
 5. **Sort** — Use “Dry Run” to test; “Sort Now” to apply moves.  
 6. **Undo** — “Undo ALL” restores from the last journaled batch.
@@ -89,6 +91,8 @@ python3 main.py
 ---
 
 ## 🧰 Building Native Executables (PyInstaller)
+
+> Perform these in project root DIR
 
 **Windows**
 ```bash
