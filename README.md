@@ -51,6 +51,7 @@ Fast, Simple, and Safe File Sorting — Organize your downloads in seconds.
 - Python **3.10+**
 - Tkinter (Linux: `sudo apt-get install python3-tk`)
 - Linux file opening: `sudo apt-get install xdg-utils`
+- Clone this repo: ``` git clone https://github.com/AryanSLAYERRR/FileFlow ```
 
 **Windows (PowerShell)**  
 ```powershell
@@ -60,7 +61,7 @@ python -m pip install --upgrade pip wheel setuptools
 python main.py
 ```
 
-**macOS / Linux**  
+**macOS / Linux**  (not tested should work though)
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
