@@ -130,19 +130,6 @@ pyinstaller --windowed --name fileflow --add-data "src:src" main.py
 
 ---
 
-## ❓ Troubleshooting
-
-- **PowerShell `&&` not valid:** Use `;` or run commands separately  
-- **Activate.ps1 blocked:**  
-  ```powershell
-  Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-  ```
-- **Open/reveal not working:**
-  - macOS → `open`
-  - Linux → Install `xdg-utils`
-
----
-
 ## 📄 License
 
 This project is licensed under the **MIT License** — see `LICENSE` for details.
