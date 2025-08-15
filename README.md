@@ -130,46 +130,6 @@ pyinstaller --windowed --name fileflow --add-data "src:src" main.py
 
 ---
 
-## 🧹 Recommended `.gitignore`
-
-<details>
-<summary>Click to expand</summary>
-
-```gitignore
-# Bytecode
-__pycache__/
-*.py[cod]
-*$py.class
-
-# Virtual environments
-.venv/
-venv/
-
-# Distribution / packaging
-dist/
-build/
-*.egg-info/
-
-# Logs
-*.log
-logs/
-
-# Runtime artifacts
-.fileflow_journal.jsonl
-config.json
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# IDE
-.vscode/
-.idea/
-```
-</details>
-
----
-
 ## ❓ Troubleshooting
 
 - **PowerShell `&&` not valid:** Use `;` or run commands separately  
