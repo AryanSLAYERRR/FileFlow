@@ -3,8 +3,24 @@ import shutil
 from typing import Dict, Iterable, Tuple
 import json
 import time
-
+import re
 PreviewItem = Tuple[str, str, str]
+from src.utils.hash_utils import file_hash
+
+_SUFFIX_RE = re.compile(r"^(?P<base>.*) \((?P<num>\d+)\)$")
+
+def _next_suffixed_name(path: str) -> str:
+    ddir, fname = os.path.split(path)
+    base, ext = os.path.splitext(fname)
+    m = _SUFFIX_RE.match(base)
+    if m:
+        base_core = m.group("base")
+        n = int(m.group("num")) + 1
+        new_base = f"{base_core} ({n})"
+    else:
+        new_base = f"{base} (1)"
+    return os.path.join(ddir, new_base + ext)
+
 
 def _now_iso() -> str:
     return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
@@ -22,33 +38,45 @@ def _append_journal(cfg: Dict, src_before: str, dest_after: str) -> None:
     with open(path, "a", encoding="utf-8") as f:
         f.write(json.dumps(entry) + "\n")
 
-
 def _resolve_conflict(dest: str, policy: str) -> str:
     if not os.path.exists(dest):
         return dest
     if policy == "skip":
         return dest
-    
-    ddir, fname = os.path.split(dest)
-    base, ext = os.path.splitext(fname)
-    n = 1
-    while True:
-        candidate = os.path.join(ddir, f"{base} ({n}){ext}")
-        if not os.path.exists(candidate):
-            return candidate
-        n += 1
+    candidate = _next_suffixed_name(dest)
+    while os.path.exists(candidate):
+        candidate = _next_suffixed_name(candidate)
+    return candidate
+
+
+
 
 def apply_moves(preview_stream: Iterable[PreviewItem], cfg: Dict, dry_run: bool = False) -> None:
     policy = cfg.get("behavior", {}).get("conflict_policy", "suffix").lower()
+
+    # If dry run, do not touch journal; only print planned moves
+    if dry_run:
+        for src, action, dest in preview_stream:
+            if action != "MOVE":
+                continue
+            final_dest = _resolve_conflict(dest, policy)
+            print(f"[DRY RUN] Moving {src} --> {final_dest}")
+        return
     for src, action, dest in preview_stream:
         if action != "MOVE":
             continue
+
         final_dest = _resolve_conflict(dest, policy)
-        if dry_run:
-            print(f"[DRY RUN] Moving {src} --> {final_dest}")
-            continue
+
         try:
             os.makedirs(os.path.dirname(final_dest), exist_ok=True)
+            if policy == "skip" and os.path.exists(dest):
+                try:
+                    if file_hash(src) == file_hash(dest):
+                        print(f"[SKIP DUPLICATE] {src} == {dest}")
+                        continue
+                except Exception:
+                    pass
             shutil.move(src, final_dest)
             _append_journal(cfg, src, final_dest)
             print(f"[MOVED] {src} --> {final_dest}")
@@ -80,10 +108,6 @@ def undo_last(cfg: Dict) -> None:
     print(f"Undo complete: {count} files restored.")
 
 def undo_all_stream(cfg: Dict) -> None:
-    """
-    Memory‑friendly: stream through the journal and undo every recorded move,
-    regardless of batch/time, without loading all lines into RAM.
-    """
     journal_file = _journal_path(cfg)
     if not os.path.isfile(journal_file):
         print(f"No journal file found at {journal_file}")
@@ -120,4 +144,14 @@ def undo_all_stream(cfg: Dict) -> None:
 
     print(f"\n=== Undo Complete ===\nRestored: {restored}\nMissing: {missing}")
 
+def _reset_journal(cfg: Dict) -> None:
+    path = _journal_path(cfg)
+    try:
+        if os.path.exists(path):
+            os.remove(path)
+    except Exception:
+        pass
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8") as f:
+        f.write("")
 

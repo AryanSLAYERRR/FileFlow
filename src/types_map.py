@@ -1,12 +1,10 @@
 
-
-
 FILE_TYPES = {
     
     ".jpg": "Images", ".jpeg": "Images", ".png": "Images", ".gif": "Images",
     ".webp": "Images", ".bmp": "Images", ".tiff": "Images", ".svg": "Images",
 
-    ".pdf": "Docs", ".doc": "Docs", ".docx": "Docs", "xls": "Docs",
+    ".pdf": "Docs", ".doc": "Docs", ".docx": "Docs", ".xls": "Docs",
     ".xlsx": "Docs", ".ppt": "Docs", ".pptx": "Docs", ".txt": "Docs",
     ".md": "Docs", ".csv": "Docs", ".rtf": "Docs", ".odt": "Docs",
 
@@ -23,7 +21,7 @@ FILE_TYPES = {
     ".c": "Code", ".cpp": "Code", ".cs": "Code", ".go": "Code",
     ".php": "Code", ".rb": "Code", ".html": "Code", ".css": "Code",
     ".sh": "Code", ".sql": "Code", ".json": "Code", ".xml": "Code",
-    ".yaml": "Code", ".yml": "Code", ".ts": "Code", ".rs": "Code",
+    ".yaml": "Code", ".yml": "Code", ".rs": "Code",
     ".swift": "Code", ".kt": "Code", ".pl": "Code", ".lua": "Code",
     ".dart": "Code", ".ts": "Code", ".tsx": "Code", ".jsx": "Code",
     ".asm": "Code", ".h": "Code", ".hpp": "Code", ".m": "Code",

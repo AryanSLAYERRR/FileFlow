@@ -34,7 +34,7 @@ def get_default_config() -> Dict[str, Any]:
     return {
         "version": 1,
         "include_paths": [_default_downloads()],
-        "exclude_globs": ["*.partial", "*.tmp", "*.bak", "*.swp", "node_modules", "__pycache__", "Thumbs.db", ".DS_Store", "*.log", "*.cache", ".*"],
+        "exclude_globs": ["*.partial", "*.tmp", "*.bak", "*.swp", "node_modules", ".git", "dist", "build", "pycache", "__pycache__", "Thumbs.db", ".DS_Store", "*.log", "*.cache", ".*"],
         "custom_rules": [
             {
                 "name": "Music",
@@ -51,7 +51,7 @@ def get_default_config() -> Dict[str, Any]:
             "conflict_policy": "skip",
             "sort_subfolders": True
         },
-        "ui": {
+        "ui": { 
             "preview_window_limit":1000,
             "show_hidden_files": False,
             "show_system_files": False,
@@ -70,6 +70,14 @@ def validate_config(cfg: Dict[str, Any]) -> Tuple[bool, List[str]]:
 
     if not isinstance(cfg.get("version"), int):
         errors.append("version should be an integer")
+    if isinstance(beh, dict):
+        mv = beh.get("move")
+        cp = beh.get("conflict_policy")
+        if not isinstance(mv, bool):
+            errors.append("behavior.move should be a boolean")
+        if cp not in {"skip", "suffix"}:
+            errors.append("behavior.conflict_policy should be 'skip' or 'suffix'")
+
 
     inc = cfg.get("include_paths")
     if not _is_str_list(inc) or not inc:
@@ -111,8 +119,8 @@ def validate_config(cfg: Dict[str, Any]) -> Tuple[bool, List[str]]:
         cp = beh.get("conflict_policy")
         if not isinstance(mv, bool):
             errors.append("behavior.move should be a boolean")
-        if cp not in {"skip"}:
-            errors.append("behavior.conflict_policy should be 'skip'") # more polcies complex later
+        if cp not in {"skip","suffix"}:
+            errors.append("behavior.conflict_policy should be 'skip' or 'suffix'") # more polcies complex later
 
     ui = cfg.get("ui")
     if not isinstance(ui, dict):
@@ -130,21 +138,19 @@ def validate_config(cfg: Dict[str, Any]) -> Tuple[bool, List[str]]:
 
 def _deep_merge_defaults(defaults: Dict[str, Any], loaded: Dict[str, Any]) -> Dict[str, Any]:
     out: Dict[str, Any] = {}
-
-    for k,v in defaults.items():
+    for k, v in defaults.items():
         if k in loaded:
-            out[k] = v
-            continue
-        lv = loaded[k]
-        if isinstance(v, dict) and isinstance(lv, dict):
-            out[k] = _deep_merge_defaults(v, lv)
+            lv = loaded[k]
+            if isinstance(v, dict) and isinstance(lv, dict):
+                out[k] = _deep_merge_defaults(v, lv)
+            else:
+                out[k] = lv
         else:
-            out[k] = lv
-
-    for k,v in loaded.items():
+            out[k] = v
+    # Bring over any extra keys present in loaded that arent in defaults
+    for k, v in loaded.items():
         if k not in out:
             out[k] = v
-    
     return out
 
 def load_config(path:str | None = None) -> Dict[str, Any]:
@@ -159,6 +165,13 @@ def load_config(path:str | None = None) -> Dict[str, Any]:
         with open(path, "r", encoding="utf-8") as f:
             loaded = json.load(f)
         merged = _deep_merge_defaults(defaults, loaded)
+        inc = merged.get("include_paths", [])
+        dr = list(merged.get("destination_roots", []))
+        if len(dr) < len(inc):
+            dr += [""] * (len(inc) - len(dr))
+        elif len(dr) > len(inc):
+            dr = dr[:len(inc)]
+        merged["destination_roots"] = dr
         ok, errs = validate_config(merged)
         if not ok:
             return defaults #resets to default settings boop
@@ -174,20 +187,34 @@ def save_config(cfg: Dict[str, Any], path: str | None = None) -> None:
         json.dump(cfg, f, indent=2, ensure_ascii=False)
 
 def resolve_destination_for_extension(ext: str, cfg: Dict[str, Any]) -> str:
-
+    # Normalize incoming ext
     if not ext:
         return CATEGORY_DESTINATION_DEFAULT["Other"]
-    
-    e= ext.lower().strip()
+    e = ext.lower().strip()
     if not e.startswith('.'):
         e = '.' + e
-    
-    rules = cfg.get("custom_rules", [])
-    for r in rules:
-        exts = r.get("exntensions") or []
-        if any(e == (x.lower().strip()) for x in exts):
-            dest = r.get("destination") or ""
-            return dest.strip() or CATEGORY_DESTINATION_DEFAULT.get("Other", "Other")
+    rules_map = cfg.get("rules", {}) or {}
+    # Normalize keys in one pass so both "jpg" and ".jpg" work
+    norm_rules = {}
+    for k, v in rules_map.items():
+        kk = k.strip().lower()
+        if not kk.startswith('.'):
+            kk = '.' + kk
+        norm_rules[kk] = (v or "").strip()
+    if e in norm_rules and norm_rules[e]:
+        return norm_rules[e]
+    custom_rules = cfg.get("custom_rules", []) or []
+    for r in custom_rules:
+        exts = r.get("extensions") or []
+        dest = (r.get("destination") or "").strip()
+        # Normalize list elements
+        for x in exts:
+            xx = x.lower().strip()
+            if not xx.startswith('.'):
+                xx = '.' + xx
+            if e == xx and dest:
+                return dest
 
+    # Fallback to category mapping
     cat = infer_category(e)
     return CATEGORY_DESTINATION_DEFAULT.get(cat, CATEGORY_DESTINATION_DEFAULT["Other"])
